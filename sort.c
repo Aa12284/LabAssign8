@@ -1,20 +1,133 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 int extraMemoryAllocated;
 
 // implements heap sort
 // extraMemoryAllocated counts bytes of memory allocated
+
+void heapSwap(int *a, int *b) {
+	int temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+void heap(int arr[], int n, int a) {
+	
+	int maxInt = a;
+	
+	int l = 2 * a + 1;
+	int r = 2 * a + 2;
+	
+	if (l < n && arr[l] > arr[maxInt]) {
+		maxInt = l;
+	}
+	
+	if (r < n && arr[r] > arr[maxInt]) {
+		maxInt = r;
+	}
+	
+	if (maxInt != a) {
+		
+		heapSwap(&arr[a], &arr[maxInt]);
+		heap(arr, n, maxInt);
+	}
+	
+	
+}
+
+
+
+
 void heapSort(int arr[], int n)
 {
+	
+	extraMemoryAllocated = 0;
+	
+	for (int a = n / 1; a >= 0; a--) {
+		heap(arr, n, a);
+	}
+	
+	for (int a = n - 1; a >= 0; a--) {
+		heapSwap(&arr[0], &arr[a]);		
+		heap(arr, a, 0);
+	}
+	
 }
 
 
 // implement merge sort
 // extraMemoryAllocated counts bytes of extra memory allocated
-void mergeSort(int pData[], int l, int r)
-{
+
+void merge(int pData[], int l, int m, int r) {
+    int a; 
+	int b; 
+	int c;
+	
+	
+    int num1 = m - l + 1;
+    int num2 = r - m;
+
+    int* left = (int*) malloc(num1 * sizeof(int));
+    int* right = (int*) malloc(num2 * sizeof(int));
+
+    for (a = 0; a < num1; a++) {
+        left[a] = pData[l + a];
+    }
+        
+        
+    for (b = 0; b < num2; b++) {
+        right[b] = pData[m + 1 + b];
+    }
+
+    a = 0;
+    b = 0;
+    c = l;
+    
+    
+    while (a < num1 && b < num2) 
+	{
+        if (left[a] <= right[b]) {
+            pData[c] = left[a];
+            a++;
+        }
+        
+        
+        else {
+            pData[c] = right[b];
+            b++;
+        }
+        
+        c++;
+    }
+
+    while (a < num1) {
+        pData[c] = left[a];
+        a++;
+        c++;
+    }
+
+    while (b < num2) {
+        pData[c] = right[b];
+        b++;
+        c++;
+    }
+
+    extraMemoryAllocated = extraMemoryAllocated + num1 * sizeof(int) + num2 * sizeof(int);
+	
+	
+
+}
+
+void mergeSort(int pData[], int l, int r) {
+    if (l < r) {
+        int middle = l + (r - l) / 2;
+        mergeSort(pData, l, middle);
+        mergeSort(pData, middle + 1, r);
+        merge(pData, l, middle, r);
+    }
 }
 
 // parses input file to an integer array
@@ -22,7 +135,7 @@ int parseData(char *inputFileName, int **ppData)
 {
 	FILE* inFile = fopen(inputFileName,"r");
 	int dataSz = 0;
-	int i, n, *data;
+	int a, n, *data;
 	*ppData = NULL;
 	
 	if (inFile)
@@ -35,10 +148,10 @@ int parseData(char *inputFileName, int **ppData)
 			printf("Cannot allocate memory\n");
 			exit(-1);
 		}
-		for (i=0;i<dataSz;++i)
+		for (a=0;a<dataSz;++a)
 		{
 			fscanf(inFile, "%d ",&n);
-			data = *ppData + i;
+			data = *ppData + a;
 			*data = n;
 		}
 
@@ -51,17 +164,17 @@ int parseData(char *inputFileName, int **ppData)
 // prints first and last 100 items in the data array
 void printArray(int pData[], int dataSz)
 {
-	int i, sz = dataSz - 100;
+	int a, sz = dataSz - 100;
 	printf("\tData:\n\t");
-	for (i=0;i<100;++i)
+	for (a=0;a<100;++a)
 	{
-		printf("%d ",pData[i]);
+		printf("%d ",pData[a]);
 	}
 	printf("\n\t");
 	
-	for (i=sz;i<dataSz;++i)
+	for (a=sz;a<dataSz;++a)
 	{
-		printf("%d ",pData[i]);
+		printf("%d ",pData[a]);
 	}
 	printf("\n\n");
 }
@@ -69,14 +182,14 @@ void printArray(int pData[], int dataSz)
 int main(void)
 {
 	clock_t start, end;
-	int i;
+	int a;
     double cpu_time_used;
 	char* fileNames[] = { "input1.txt", "input2.txt", "input3.txt", "input4.txt" };
 	
-	for (i=0;i<4;++i)
+	for (a=0;a<4;++a)
 	{
 		int *pDataSrc, *pDataCopy;
-		int dataSz = parseData(fileNames[i], &pDataSrc);
+		int dataSz = parseData(fileNames[a], &pDataSrc);
 		
 		if (dataSz <= 0)
 			continue;
