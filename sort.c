@@ -18,15 +18,15 @@ void heap(int arr[], int n, int a) {
 	
 	int maxInt = a;
 	
-	int l = 2 * a + 1;
-	int r = 2 * a + 2;
+	int left = 2 * a + 1;
+	int right = 2 * a + 2;
 	
-	if (l < n && arr[l] > arr[maxInt]) {
-		maxInt = l;
+	if (left < n && arr[left] > arr[maxInt]) {
+		maxInt = left;
 	}
 	
-	if (r < n && arr[r] > arr[maxInt]) {
-		maxInt = r;
+	if (right < n && arr[right] > arr[maxInt]) {
+		maxInt = right;
 	}
 	
 	if (maxInt != a) {
